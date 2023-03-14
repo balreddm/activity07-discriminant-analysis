@@ -6,3 +6,50 @@ output: github_document
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
+
+## Loading necessary packages
+
+```{r}
+library(tidyverse)
+library(tidymodels)
+
+```
+
+## Loading the data
+
+```{r}
+resume <- read.csv("https://www.openintro.org/data/csv/resume.csv")
+resume
+```
+## LDA
+
+```{r}
+
+# Convert received_callback to a factor with more informative labels
+resume <- resume %>% 
+  mutate(received_callback = factor(received_callback, labels = c("No", "Yes")))
+
+# LDA
+library(discrim)
+lda_years <- discrim_linear() %>% 
+  set_mode("classification") %>% 
+  set_engine("MASS") %>% 
+  fit(received_callback ~ log(years_experience), data = resume)
+
+lda_years
+
+```
+## Predictions
+
+```{r}
+predict(lda_years, new_data = resume, type = "prob")
+```
+```{r}
+augment(lda_years, new_data = resume) %>% 
+  conf_mat(truth = received_callback, estimate = .pred_class)
+```
+```{r}
+augment(lda_years, new_data = resume) %>% 
+  accuracy(truth = received_callback, estimate = .pred_class)
+```
+
