@@ -19,7 +19,7 @@ library(tidymodels)
 
 ```{r}
 resume <- read.csv("https://www.openintro.org/data/csv/resume.csv")
-resume
+head(resume)
 ```
 ## LDA
 
